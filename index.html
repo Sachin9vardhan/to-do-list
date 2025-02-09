@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List Application</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .todo-container {
+        max-width: 500px;
+        margin: auto;
+      }
+      .todo-container h2 {
+        text-align: center;
+      }
+      .form-group {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .form-group input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .form-group button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .form-group button:hover {
+        background-color: #0056b3;
+      }
+      .todo-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      .todo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+      }
+      .todo-item.completed {
+        text-decoration: line-through;
+        color: gray;
+      }
+      .todo-item button {
+        margin-left: 10px;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .todo-item button.edit {
+        background-color: #ffc107;
+        color: white;
+        border: none;
+      }
+      .todo-item button.delete {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+      }
+      .todo-item button.complete {
+        background-color: #28a745;
+        color: white;
+        border: none;
+      }
+      .filter-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .filter-buttons button {
+        padding: 10px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .filter-buttons button.all {
+        background-color: #6c757d;
+        color: white;
+      }
+      .filter-buttons button.active {
+        background-color: #007bff;
+        color: white;
+      }
+      .filter-buttons button.completed {
+        background-color: #28a745;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="todo-container">
+      <h2>To-Do List</h2>
+
+      <div class="form-group">
+        <input type="text" id="newTask" placeholder="Add a new task" />
+        <button onclick="addTask()">Add</button>
+      </div>
+
+      <ul class="todo-list" id="todoList"></ul>
+
+      <div class="filter-buttons">
+        <button class="all" onclick="filterTasks('all')">All</button>
+        <button class="active" onclick="filterTasks('active')">Active</button>
+        <button class="completed" onclick="filterTasks('completed')">
+          Completed
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let tasks = [];
+
+      function addTask() {
+        const taskInput = document.getElementById("newTask");
+        const taskText = taskInput.value.trim();
+
+        if (taskText === "") {
+          alert("Task cannot be empty!");
+          return;
+        }
+
+        tasks.push({ text: taskText, completed: false });
+        taskInput.value = "";
+        renderTasks();
+      }
+
+      function deleteTask(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+      }
+
+      function editTask(index) {
+        const newTaskText = prompt("Edit task:", tasks[index].text);
+        if (newTaskText !== null) {
+          tasks[index].text = newTaskText.trim();
+          renderTasks();
+        }
+      }
+
+      function toggleTaskCompletion(index) {
+        tasks[index].completed = !tasks[index].completed;
+        renderTasks();
+      }
+
+      function filterTasks(filter) {
+        const filteredTasks = tasks.filter((task) => {
+          if (filter === "active") return !task.completed;
+          if (filter === "completed") return task.completed;
+          return true; // 'all'
+        });
+        renderTasks(filteredTasks);
+      }
+
+      function renderTasks(filteredTasks = tasks) {
+        const todoList = document.getElementById("todoList");
+        todoList.innerHTML = "";
+
+        filteredTasks.forEach((task, index) => {
+          const li = document.createElement("li");
+          li.className = `todo-item ${task.completed ? "completed" : ""}`;
+
+          li.innerHTML = `
+                <span>${task.text}</span>
+                <div>
+                    <button class="complete" onclick="toggleTaskCompletion(${index})">${
+            task.completed ? "Undo" : "Complete"
+          }</button>
+                    <button class="edit" onclick="editTask(${index})">Edit</button>
+                    <button class="delete" onclick="deleteTask(${index})">Delete</button>
+                </div>
+            `;
+
+          todoList.appendChild(li);
+        });
+      }
+    </script>
+  </body>
+</html>
